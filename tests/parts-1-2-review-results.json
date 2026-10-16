@@ -1,0 +1,993 @@
+{
+  "engine": "Node + @napi-rs/canvas (Skia); stub DOM, not browser E2E",
+  "sourceHashes": {
+    "dockcheck-demo.html": "16c2b502b7ac18cc0a79d50bcd59150d4b0c11254a70d63666ae4152bf999e20",
+    "perception.js": "d9d29ae0e302ac96df7747b30454356eb6ff13d8cb284553a5d3f8b4a2aab2bc",
+    "policies.js": "62448ca7848d1d397ee87428ef69178f0e5d1ef8dfac21114825db6393b10d42",
+    "evaluation.js": "094fe9de5ec0b407d647fdcaa3c13646becb7cb57d4a7700211a9f703bf8209f",
+    "scenarios.js": "b2197ed13f79c914263c0fc3d005e8c0647f17b35e0f23d3406df1b6ded716db",
+    "integration.js": "a58d68d3c0cea2656783cc81bb78a73fa7bb51e58555c839e1a4812f59ebfd59"
+  },
+  "moduleChecks": [
+    {
+      "name": "Ảnh 640×400; dấu đầu (344,200), dấu sau (296,200)",
+      "pass": true
+    },
+    {
+      "name": "Góc +90°: dấu đầu phía dưới, dấu sau phía trên",
+      "pass": true
+    },
+    {
+      "name": "Nhãn thật C1",
+      "pass": true
+    },
+    {
+      "name": "Nhãn thật C2",
+      "pass": true
+    },
+    {
+      "name": "Nhãn thật C3",
+      "pass": true
+    },
+    {
+      "name": "Nhãn thật C4",
+      "pass": true
+    },
+    {
+      "name": "Nhãn thật N1-101",
+      "pass": true
+    },
+    {
+      "name": "Nhãn thật N2-101",
+      "pass": true
+    },
+    {
+      "name": "Nhãn thật N3-101",
+      "pass": true
+    },
+    {
+      "name": "Biên thân tính cả dấu bằng, vượt 0,001 u thì loại",
+      "pass": true
+    },
+    {
+      "name": "Hướng ±5° đạt, 5,001° bị loại; π chuẩn hóa thành −π",
+      "pass": true
+    },
+    {
+      "name": "Che dấu đầu/sau loại đúng pixel màu",
+      "pass": true
+    },
+    {
+      "name": "C4: che tại 250 ms, hiện lại tại 300 ms",
+      "pass": true
+    },
+    {
+      "name": "N3: khoảng che [1000,1800) và [3000,3800)",
+      "pass": true
+    },
+    {
+      "name": "Seed lặp lại cho cùng ảnh; nhiễu không đổi tư thế thật",
+      "pass": true
+    },
+    {
+      "name": "Che dấu không làm lệch chuỗi nhiễu của frame sau",
+      "pass": true
+    },
+    {
+      "name": "Nhiễu 0 vẫn tiêu thụ đủ bốn mẫu PRNG",
+      "pass": true
+    },
+    {
+      "name": "Bộ cấu hình: 19 lượt, 12 đạt/7 không đạt, 1919 mẫu",
+      "pass": true
+    },
+    {
+      "name": "Sai hiệu chuẩn: ảnh C2 giữ nguyên, tâm ước lượng 52,5 u",
+      "pass": true
+    },
+    {
+      "name": "Mỗi lần render trả buffer độc lập",
+      "pass": true
+    },
+    {
+      "name": "Seed 0 và góc không hữu hạn bị từ chối",
+      "pass": true
+    }
+  ],
+  "suite": [
+    {
+      "trialId": "C1",
+      "seed": 101,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 50,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 0,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 0,
+          "CHECKING": 0,
+          "READY": 101,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": 500,
+        "transitions": 1,
+        "stateCounts": {
+          "NOT_READY": 0,
+          "CHECKING": 10,
+          "READY": 91,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "C2",
+      "seed": 101,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 54.5,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 0,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "FAIL_POSITION",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 101,
+          "CHECKING": 0,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 101,
+          "CHECKING": 0,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "C3",
+      "seed": 101,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 50,
+        "y": 30,
+        "theta": 0.13962634015954636,
+        "noiseAmplitudePx": 0,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "FAIL_ORIENTATION",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 101,
+          "CHECKING": 0,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 101,
+          "CHECKING": 0,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "C4",
+      "seed": 101,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 50,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 0,
+        "occlusionSchedule": {
+          "type": "periodic",
+          "periodMs": 300,
+          "startMs": 250,
+          "endMs": 300
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 16,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 32,
+        "stateCounts": {
+          "NOT_READY": 0,
+          "CHECKING": 0,
+          "READY": 85,
+          "UNKNOWN": 16
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 0,
+          "CHECKING": 85,
+          "READY": 0,
+          "UNKNOWN": 16
+        }
+      }
+    },
+    {
+      "trialId": "N1-101",
+      "seed": 101,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 52.7,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 40,
+        "stateCounts": {
+          "NOT_READY": 27,
+          "CHECKING": 0,
+          "READY": 74,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": 1050,
+        "transitions": 2,
+        "stateCounts": {
+          "NOT_READY": 27,
+          "CHECKING": 71,
+          "READY": 3,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N1-202",
+      "seed": 202,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 52.7,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 36,
+        "stateCounts": {
+          "NOT_READY": 28,
+          "CHECKING": 0,
+          "READY": 73,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": 3150,
+        "transitions": 2,
+        "stateCounts": {
+          "NOT_READY": 28,
+          "CHECKING": 70,
+          "READY": 3,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N1-303",
+      "seed": 303,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 52.7,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 54,
+        "stateCounts": {
+          "NOT_READY": 35,
+          "CHECKING": 0,
+          "READY": 66,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 35,
+          "CHECKING": 66,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N1-404",
+      "seed": 404,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 52.7,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 44,
+        "stateCounts": {
+          "NOT_READY": 25,
+          "CHECKING": 0,
+          "READY": 76,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": 2550,
+        "transitions": 2,
+        "stateCounts": {
+          "NOT_READY": 25,
+          "CHECKING": 72,
+          "READY": 4,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N1-505",
+      "seed": 505,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 52.7,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 47,
+        "stateCounts": {
+          "NOT_READY": 33,
+          "CHECKING": 0,
+          "READY": 68,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 33,
+          "CHECKING": 68,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N2-101",
+      "seed": 101,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 53.3,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "FAIL_POSITION",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 1550,
+        "transitions": 6,
+        "stateCounts": {
+          "NOT_READY": 98,
+          "CHECKING": 0,
+          "READY": 3,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 98,
+          "CHECKING": 3,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N2-202",
+      "seed": 202,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 53.3,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "FAIL_POSITION",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 3100,
+        "transitions": 2,
+        "stateCounts": {
+          "NOT_READY": 100,
+          "CHECKING": 0,
+          "READY": 1,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 100,
+          "CHECKING": 1,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N2-303",
+      "seed": 303,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 53.3,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "FAIL_POSITION",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 7,
+        "stateCounts": {
+          "NOT_READY": 97,
+          "CHECKING": 0,
+          "READY": 4,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 97,
+          "CHECKING": 4,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N2-404",
+      "seed": 404,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 53.3,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "FAIL_POSITION",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 1700,
+        "transitions": 4,
+        "stateCounts": {
+          "NOT_READY": 99,
+          "CHECKING": 0,
+          "READY": 2,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 99,
+          "CHECKING": 2,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N2-505",
+      "seed": 505,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 53.3,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "none"
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "FAIL_POSITION",
+      "sampleCount": 101,
+      "invalidCount": 0,
+      "A": {
+        "firstReadyTMs": 3100,
+        "transitions": 2,
+        "stateCounts": {
+          "NOT_READY": 100,
+          "CHECKING": 0,
+          "READY": 1,
+          "UNKNOWN": 0
+        }
+      },
+      "B": {
+        "firstReadyTMs": null,
+        "transitions": 0,
+        "stateCounts": {
+          "NOT_READY": 100,
+          "CHECKING": 1,
+          "READY": 0,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    {
+      "trialId": "N3-101",
+      "seed": 101,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 50,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "intervals",
+          "intervals": [
+            [
+              1000,
+              1800
+            ],
+            [
+              3000,
+              3800
+            ]
+          ]
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 32,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 16,
+        "stateCounts": {
+          "NOT_READY": 6,
+          "CHECKING": 0,
+          "READY": 63,
+          "UNKNOWN": 32
+        }
+      },
+      "B": {
+        "firstReadyTMs": 500,
+        "transitions": 4,
+        "stateCounts": {
+          "NOT_READY": 6,
+          "CHECKING": 52,
+          "READY": 11,
+          "UNKNOWN": 32
+        }
+      }
+    },
+    {
+      "trialId": "N3-202",
+      "seed": 202,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 50,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "intervals",
+          "intervals": [
+            [
+              1000,
+              1800
+            ],
+            [
+              3000,
+              3800
+            ]
+          ]
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 32,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 14,
+        "stateCounts": {
+          "NOT_READY": 5,
+          "CHECKING": 0,
+          "READY": 64,
+          "UNKNOWN": 32
+        }
+      },
+      "B": {
+        "firstReadyTMs": 950,
+        "transitions": 6,
+        "stateCounts": {
+          "NOT_READY": 5,
+          "CHECKING": 42,
+          "READY": 22,
+          "UNKNOWN": 32
+        }
+      }
+    },
+    {
+      "trialId": "N3-303",
+      "seed": 303,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 50,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "intervals",
+          "intervals": [
+            [
+              1000,
+              1800
+            ],
+            [
+              3000,
+              3800
+            ]
+          ]
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 32,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 18,
+        "stateCounts": {
+          "NOT_READY": 7,
+          "CHECKING": 0,
+          "READY": 62,
+          "UNKNOWN": 32
+        }
+      },
+      "B": {
+        "firstReadyTMs": 4300,
+        "transitions": 2,
+        "stateCounts": {
+          "NOT_READY": 7,
+          "CHECKING": 57,
+          "READY": 5,
+          "UNKNOWN": 32
+        }
+      }
+    },
+    {
+      "trialId": "N3-404",
+      "seed": 404,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 50,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "intervals",
+          "intervals": [
+            [
+              1000,
+              1800
+            ],
+            [
+              3000,
+              3800
+            ]
+          ]
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 32,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 12,
+        "stateCounts": {
+          "NOT_READY": 6,
+          "CHECKING": 0,
+          "READY": 63,
+          "UNKNOWN": 32
+        }
+      },
+      "B": {
+        "firstReadyTMs": 2300,
+        "transitions": 4,
+        "stateCounts": {
+          "NOT_READY": 6,
+          "CHECKING": 43,
+          "READY": 20,
+          "UNKNOWN": 32
+        }
+      }
+    },
+    {
+      "trialId": "N3-505",
+      "seed": 505,
+      "suiteVersion": "suite-v1",
+      "config": {
+        "x": 50,
+        "y": 30,
+        "theta": 0,
+        "noiseAmplitudePx": 3,
+        "occlusionSchedule": {
+          "type": "intervals",
+          "intervals": [
+            [
+              1000,
+              1800
+            ],
+            [
+              3000,
+              3800
+            ]
+          ]
+        },
+        "calibration": {
+          "scale": 6,
+          "offsetX": 20,
+          "offsetY": 20
+        }
+      },
+      "trueLabel": "PASS",
+      "sampleCount": 101,
+      "invalidCount": 32,
+      "A": {
+        "firstReadyTMs": 0,
+        "transitions": 21,
+        "stateCounts": {
+          "NOT_READY": 10,
+          "CHECKING": 0,
+          "READY": 59,
+          "UNKNOWN": 32
+        }
+      },
+      "B": {
+        "firstReadyTMs": 4800,
+        "transitions": 2,
+        "stateCounts": {
+          "NOT_READY": 10,
+          "CHECKING": 58,
+          "READY": 1,
+          "UNKNOWN": 32
+        }
+      }
+    }
+  ],
+  "calibrationChallenge": {
+    "trialId": "calibration-bias-v1",
+    "seed": 101,
+    "suiteVersion": "suite-v1-calib",
+    "config": {
+      "x": 54.5,
+      "y": 30,
+      "theta": 0,
+      "noiseAmplitudePx": 0,
+      "occlusionSchedule": {
+        "type": "none"
+      },
+      "calibration": {
+        "scale": 6,
+        "offsetX": 32,
+        "offsetY": 20
+      }
+    },
+    "trueLabel": "FAIL_POSITION",
+    "sampleCount": 101,
+    "invalidCount": 0,
+    "A": {
+      "firstReadyTMs": 0,
+      "transitions": 0,
+      "stateCounts": {
+        "NOT_READY": 0,
+        "CHECKING": 0,
+        "READY": 101,
+        "UNKNOWN": 0
+      }
+    },
+    "B": {
+      "firstReadyTMs": 500,
+      "transitions": 1,
+      "stateCounts": {
+        "NOT_READY": 0,
+        "CHECKING": 10,
+        "READY": 91,
+        "UNKNOWN": 0
+      }
+    }
+  },
+  "reproducibleN2": true
+}
