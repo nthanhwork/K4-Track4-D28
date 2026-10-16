@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Perception — development fixture only</title>
+<h1>Perception: Canvas fixture (chỉ dùng phát triển)</h1>
+<p>Ảnh thử độc lập; chưa thay thế kiểm thử với renderer của người 1.</p>
+<canvas id="camera" width="640" height="400"></canvas>
+<pre id="results">RUNNING</pre>
+<script src="../perception.js"></script>
+<script>
+const ctx = document.getElementById('camera').getContext('2d', {willReadFrequently:true});
+const lines = [];
+let failures = 0;
+const cases = [
+  {name:'C1 center', x:50, y:30, theta:0, valid:true, pass:true},
+  {name:'C2 overhang', x:54.5, y:30, theta:0, valid:true, pass:false},
+  {name:'C3 heading', x:50, y:30, theta:8*Math.PI/180, valid:true, pass:false},
+  {name:'Missing front', x:50, y:30, theta:0, hide:true, valid:false, pass:false},
+  {name:'Dock boundary', x:53, y:30, theta:0, valid:true, pass:true},
+  {name:'Calibration bias', x:54.5, y:30, theta:0, offsetX:32, valid:true, pass:true}
+];
+for (const c of cases) {
+  ctx.fillStyle = '#202020'; ctx.fillRect(0,0,640,400);
+  for (const [offset,color] of [[4,'rgb(240,40,40)'],[-4,'rgb(40,80,240)']]) {
+    if (c.hide && offset===4) continue;
+    ctx.fillStyle=color; ctx.beginPath();
+    ctx.arc(20+6*(c.x+offset*Math.cos(c.theta)),20+6*(c.y+offset*Math.sin(c.theta)),6,0,2*Math.PI); ctx.fill();
+  }
+  const observation = DC.perception.estimate(ctx.getImageData(0,0,640,400),{scale:6,offsetX:c.offsetX??20,offsetY:20},0);
+  const ok = observation.valid===c.valid && observation.geometryPass===c.pass;
+  if (!ok) failures++;
+  lines.push(`${ok?'PASS':'FAIL'} ${c.name}: ${JSON.stringify(observation)}`);
+}
+document.getElementById('results').textContent = `${failures===0?'PASS':'FAIL'}: ${cases.length-failures}/${cases.length}\n`+lines.join('\n');
+document.title = failures===0 ? 'PASS perception Canvas' : 'FAIL perception Canvas';
+</script>
