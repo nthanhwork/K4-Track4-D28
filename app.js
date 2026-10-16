@@ -98,6 +98,19 @@
     };
   }
 
+  function interruptObservation() {
+    policyPair.reset();
+    lastObservation = null;
+    lastPolicyResults = null;
+    state.lastWallTime = null;
+    for (const key of ['A', 'B']) {
+      $('badgePolicy' + key).textContent = 'UNKNOWN';
+      $('badgePolicy' + key).className = 'status-badge unknown';
+      $('descPolicy' + key).textContent = 'Quan sát bị ngắt; cần chuỗi quan sát mới.';
+    }
+    $('barProgressB').style.width = '0%';
+  }
+
   // ==========================================
   // 2. ĐỒNG BỘ GIAO DIỆN (UI SYNC)
   // ==========================================
@@ -234,11 +247,12 @@
   // 4. BATCH SUITE RUNNER (19 LƯỢT SUITE-V1)
   // ==========================================
   let isBatchRunning = false;
-  let batchPauseRequested = false;
+  let batchCancelled = false;
 
   async function runBatchSuite(suiteTrials, isAutoImpact = false) {
-    if (isBatchRunning) return;
+    if (isBatchRunning || document.hidden) return false;
     isBatchRunning = true;
+    batchCancelled = false;
     state.mode = isAutoImpact ? 'impact_auto' : 'batch';
     state.running = false;
 
@@ -246,11 +260,17 @@
     setControlsDisabled(true);
     $('btnRunSuite').disabled = true;
     $('btnRunChallenge').disabled = true;
+    $('btnRunAutoImpact').disabled = true;
+    $('btnExportCSV').disabled = true;
+    state.suiteResults = [];
+    state.suiteSummary = null;
+    $('resultsSection').style.display = 'none';
     $('batchProgressContainer').style.display = 'block';
 
     const results = [];
     const totalTrials = suiteTrials.length;
 
+    try {
     for (let trialIdx = 0; trialIdx < totalTrials; trialIdx++) {
       const trial = suiteTrials[trialIdx];
       $('batchStatusText').textContent = `Đang chạy [${trialIdx + 1}/${totalTrials}]: ${trial.name} (Seed: ${trial.seed})...`;
@@ -280,11 +300,7 @@
 
       // 2. Chạy đúng 101 mẫu từ t = 0 đến t = 5000 ms, bước 50 ms
       for (let t = 0; t <= trial.durationMs; t += trial.sampleMs) {
-        // Tạm dừng batch nếu tab bị ẩn (Tuân thủ ràng buộc plan v2)
-        while (document.hidden || batchPauseRequested) {
-          $('batchStatusText').textContent = `⏸️ Batch đang tạm dừng do tab bị ẩn hoặc người dùng yêu cầu...`;
-          await new Promise((resolve) => setTimeout(resolve, 200));
-        }
+        if (document.hidden || batchCancelled) throw new Error('Đã hủy bộ đo do tab bị ẩn; chạy lại từ đầu.');
 
         const res = executePipelineStep(
           trial.world,
@@ -309,6 +325,7 @@
         }
       }
 
+      if (document.hidden || batchCancelled) throw new Error('Đã hủy bộ đo do tab bị ẩn; chạy lại từ đầu.');
       const rawResult = metrics.finish();
       const trueLabel = (rawResult.trueLabel === 'PASS' || rawResult.trueLabel === true);
       const firstA = rawResult.A.firstReadyTMs !== undefined ? rawResult.A.firstReadyTMs : rawResult.A.timeToReadyMs;
@@ -356,13 +373,25 @@
     state.suiteSummary = summarizeSuite(results);
     renderResultsTable(results, state.suiteSummary);
 
-    // Mở khóa điều khiển
-    setControlsDisabled(false);
-    $('btnRunSuite').disabled = false;
-    $('btnRunChallenge').disabled = false;
-    $('btnExportCSV').disabled = false;
-    isBatchRunning = false;
-    state.mode = 'interactive';
+    return true;
+    } catch (error) {
+      state.suiteResults = [];
+      state.suiteSummary = null;
+      $('resultsSection').style.display = 'none';
+      $('batchStatusText').textContent = error.message;
+      $('batchProgressBar').style.width = '0%';
+      interruptObservation();
+      return false;
+    } finally {
+      setControlsDisabled(false);
+      $('btnRunSuite').disabled = false;
+      $('btnRunChallenge').disabled = false;
+      $('btnRunAutoImpact').disabled = false;
+      $('btnExportCSV').disabled = state.suiteResults.length === 0;
+      $('btnPause').textContent = '▶️ Tiếp tục';
+      isBatchRunning = false;
+      state.mode = 'interactive';
+    }
   }
 
   // Helper tính median mảng số
@@ -576,12 +605,20 @@
   }
 
   async function runAutoImpact() {
+    if (isBatchRunning || document.hidden) return false;
+    state.impact.autoDurationSec = null;
+    $('impactResultBox').textContent = '';
     $('btnRunAutoImpact').disabled = true;
     $('autoTimerStatus').textContent = 'Đang chạy tự động 1× (thời gian thực)...';
     state.impact.autoStartTime = performance.now();
 
     // Chạy 19 ca ở tốc độ 1×
-    await runBatchSuite(Scenarios.suite, true);
+    const completed = await runBatchSuite(Scenarios.suite, true);
+    if (!completed) {
+      state.impact.autoStartTime = null;
+      $('autoTimerStatus').textContent = 'Đã hủy phép đo tự động; chưa có thời lượng hợp lệ.';
+      return false;
+    }
 
     const durationMs = performance.now() - state.impact.autoStartTime;
     state.impact.autoDurationSec = durationMs / 1000;
@@ -839,12 +876,16 @@
 
     // 3. Tạm dừng / Tiếp tục & Bước 50 ms
     $('btnPause').onclick = () => {
+      if (isBatchRunning) return;
+      if (state.running) interruptObservation();
       state.running = !state.running;
       $('btnPause').textContent = state.running ? '⏸️ Tạm dừng' : '▶️ Tiếp tục';
       state.lastWallTime = null;
     };
 
     $('btnStep50').onclick = () => {
+      if (isBatchRunning) return;
+      if (state.running) interruptObservation();
       state.running = false;
       $('btnPause').textContent = '▶️ Tiếp tục';
       stepInteractive(state.tMs + 50);
@@ -882,7 +923,7 @@
     };
 
     $('btnRunAutoImpact').onclick = () => {
-      runAutoImpact();
+      return runAutoImpact();
     };
 
     // 6b. Tự kiểm tra 21 module checks
@@ -902,12 +943,11 @@
       state.lastWallTime = null;
       if (document.hidden) {
         // Tab bị ẩn: Reset Policy state và xóa READY cũ
-        policyPair.reset();
+        interruptObservation();
         if (isBatchRunning) {
-          batchPauseRequested = true;
+          batchCancelled = true;
         }
       } else {
-        batchPauseRequested = false;
         if (state.mode === 'interactive') {
           stepInteractive(state.tMs);
         }

@@ -1,7 +1,7 @@
 {
   "engine": "Node + @napi-rs/canvas (Skia); stub DOM, not browser E2E",
   "sourceHashes": {
-    "dockcheck-demo.html": "16c2b502b7ac18cc0a79d50bcd59150d4b0c11254a70d63666ae4152bf999e20",
+    "dockcheck-demo.html": "b6446ea87a13fa6a1b8c01d4f9a70b240597ff8036f9c016effec8d5d2ee9bf1",
     "perception.js": "d9d29ae0e302ac96df7747b30454356eb6ff13d8cb284553a5d3f8b4a2aab2bc",
     "policies.js": "62448ca7848d1d397ee87428ef69178f0e5d1ef8dfac21114825db6393b10d42",
     "evaluation.js": "094fe9de5ec0b407d647fdcaa3c13646becb7cb57d4a7700211a9f703bf8209f",

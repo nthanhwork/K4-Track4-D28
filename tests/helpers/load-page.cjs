@@ -7,15 +7,15 @@ module.exports = function loadPage(file = 'dockcheck-world.html', allowExternalS
   const elements = new Map(), documentListeners = {}, windowListeners = {};
   const element = id => {
     if (!elements.has(id)) {
-      const item = ['world','camera'].includes(id) ? createCanvas(640,400) : {};
-      Object.assign(item, {value:'', checked:false, disabled:false, textContent:'', dataset:{}, append(){}, reportValidity(){return true;}});
+      const item = ['world','camera','worldCanvas','cameraCanvas'].includes(id) ? createCanvas(640,400) : {};
+      Object.assign(item, {value:'', checked:false, disabled:false, textContent:'', dataset:{}, style:{}, append(){}, appendChild(){}, scrollIntoView(){}, reportValidity(){return true;}});
       elements.set(id,item);
     }
     return elements.get(id);
   };
   const document = {
     hidden:false, getElementById:element,
-    createElement:tag => tag==='canvas' ? createCanvas(640,400) : {value:'',textContent:''},
+    createElement:tag => tag==='canvas' ? createCanvas(640,400) : {value:'',textContent:'',style:{},appendChild(){}},
     addEventListener(name,fn){(documentListeners[name] ||= []).push(fn);}
   };
   const sandbox = {document, console:{log(){}}, structuredClone, performance, setTimeout,
