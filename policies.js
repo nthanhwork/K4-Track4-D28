@@ -34,6 +34,14 @@ window.DC.policies = (function () {
     }
 
     function step(observation) {
+      if (!observation || !Number.isFinite(observation.tMs) || observation.tMs < 0 ||
+          (lastTMs !== null && observation.tMs <= lastTMs)) {
+        reset();
+        return {
+          A: { state: UNKNOWN, ready: false },
+          B: { state: UNKNOWN, ready: false },
+        };
+      }
       const a = evaluateA(observation);
       const b = evaluateB(observation, observation.tMs, lastTMs, candidateSince);
       candidateSince = b.candidateSince;
@@ -137,7 +145,7 @@ window.DC.policies = (function () {
       p.step(makeObservation(100, true, true));
       p.step(makeObservation(600, true, true));
       const out = p.step(makeObservation(500, true, true));
-      assert('C5: non-monotonic tMs treated as large gap → B resets (CHECKING)', out.B.state === CHECKING);
+      assert('C5: non-monotonic tMs invalidates both decisions', out.A.state === UNKNOWN && out.B.state === UNKNOWN);
     }
 
     // Case 6: A is single-frame, not affected by history

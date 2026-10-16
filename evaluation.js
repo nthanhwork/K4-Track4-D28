@@ -32,8 +32,9 @@ window.DC.evaluation = (function () {
   // Label is one of: 'PASS' | 'FAIL_POSITION' | 'FAIL_ORIENTATION'
   // 'PASS' = all 4 corners inside allow zone AND |theta| <= 5°
   function computeTrueLabel(world) {
-    const thetaDeg = Math.abs(((world.theta + Math.PI) % (2 * Math.PI)) - Math.PI) * 180 / Math.PI;
-    const orientOk = thetaDeg <= DOCK.thetaMaxDeg;
+    const turn = 2 * Math.PI;
+    const theta = ((world.theta + Math.PI) % turn + turn) % turn - Math.PI;
+    const orientOk = Math.abs(theta) <= DOCK.thetaMaxDeg * Math.PI / 180 + 1e-12;
     const corners = footprintCorners(world.x, world.y, world.theta);
     let posOk = true;
     for (let i = 0; i < corners.length; i++) {
@@ -52,7 +53,7 @@ window.DC.evaluation = (function () {
   // Create a metrics recorder for a single trial.
   // Returns object with .record(obs, policyResults) and .finish() -> TrialResult
   function create(trialConfig) {
-    let trueLabel = null;
+    const trueLabel = computeTrueLabel(trialConfig.world);
     let firstReadyA = null;
     let firstReadyB = null;
     let lastReadyA = false;
@@ -69,10 +70,6 @@ window.DC.evaluation = (function () {
         sampleCount++;
         if (!obs.valid) {
           invalidCount++;
-        }
-        if (trueLabel === null && obs.valid && obs.footprint) {
-          // we do not compute trueLabel from perception — it is set by runner from world
-          // this branch intentionally does nothing; trueLabel is set externally via .setTrueLabel
         }
         const a = policyResults.A;
         const b = policyResults.B;
@@ -96,7 +93,7 @@ window.DC.evaluation = (function () {
         lastReadyB = !!(b && b.ready);
       },
       setTrueLabel: function (label) {
-        trueLabel = label;
+        if (label !== trueLabel) throw new Error('Ground truth must match trialConfig.world');
       },
       finish: function () {
         const label = trueLabel;
@@ -220,7 +217,7 @@ window.DC.evaluation = (function () {
       const tc = makeTrialConfig('T3', { x: 50, y: 30, theta: 0 });
       const m = create(tc);
       m.setTrueLabel('PASS');
-      // pattern: F F T T F F  (4 transitions, 6 samples)
+      // pattern: F F T T F F (2 transitions, 6 samples)
       const readySeq = [false, false, true, true, false, false];
       for (let i = 0; i < readySeq.length; i++) {
         m.record({ tMs: i * 50, valid: true, geometryPass: true, footprint: [], pose: {} },
@@ -228,7 +225,7 @@ window.DC.evaluation = (function () {
             B: { state: readySeq[i] ? 'READY' : 'NOT_READY', ready: readySeq[i] } });
       }
       const r = m.finish();
-      assert('M12: 3 transitions (F→T, T→F, ignore first init)', r.A.transitions === 2, 'got ' + r.A.transitions);
+      assert('M12: 2 transitions (F→T, T→F, ignore first init)', r.A.transitions === 2, 'got ' + r.A.transitions);
     }
 
     let pass = 0;

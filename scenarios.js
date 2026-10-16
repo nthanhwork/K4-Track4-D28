@@ -3,7 +3,7 @@
 
 window.DC = window.DC || {};
 window.DC.scenarios = (function () {
-  const SUITE_VERSION = 'v1';
+  const SUITE_VERSION = 'suite-v1';
   const SEEDS = [101, 202, 303, 404, 505];
   const DEFAULT_CAL = { scale: 6, offsetX: 20, offsetY: 20 };
   const DURATION_MS = 5000;
@@ -23,10 +23,16 @@ window.DC.scenarios = (function () {
   function makeTrial(id, world, noiseAmplitudePx, occlusionFn, seed) {
     return {
       id: id,
+      group: id.split('-')[0],
+      name: id,
+      randomAlgorithm: 'xorshift32',
       world: world,
       noiseAmplitudePx: noiseAmplitudePx,
-      occlusionSchedule: occlusionFn ? occlusionFn.toString() : null,
-      occlusionFn: occlusionFn,
+      occlusionSchedule: occlusionFn === c4Schedule
+        ? {type:'periodic', periodMs:300, startMs:250, endMs:300}
+        : occlusionFn === n3Schedule
+          ? {type:'intervals', intervals:[[1000,1800],[3000,3800]]}
+          : {type:'none'},
       calibration: Object.assign({}, DEFAULT_CAL),
       seed: seed,
       durationMs: DURATION_MS,
@@ -53,26 +59,28 @@ window.DC.scenarios = (function () {
 
   // N1: (52.7,30,0°), noise 3 — PASS, near boundary
   for (let i = 0; i < SEEDS.length; i++) {
-    suite.push(makeTrial('N1_' + SEEDS[i], { x: 52.7, y: 30, theta: 0 }, 3, null, SEEDS[i]));
+    suite.push(makeTrial('N1-' + SEEDS[i], { x: 52.7, y: 30, theta: 0 }, 3, null, SEEDS[i]));
   }
 
   // N2: (53.3,30,0°), noise 3 — FAIL_POSITION, near boundary
   for (let i = 0; i < SEEDS.length; i++) {
-    suite.push(makeTrial('N2_' + SEEDS[i], { x: 53.3, y: 30, theta: 0 }, 3, null, SEEDS[i]));
+    suite.push(makeTrial('N2-' + SEEDS[i], { x: 53.3, y: 30, theta: 0 }, 3, null, SEEDS[i]));
   }
 
   // N3: (50,30,0°), noise 3, two occlusion windows — PASS but with gaps
   for (let i = 0; i < SEEDS.length; i++) {
-    suite.push(makeTrial('N3_' + SEEDS[i], { x: 50, y: 30, theta: 0 }, 3, n3Schedule, SEEDS[i]));
+    suite.push(makeTrial('N3-' + SEEDS[i], { x: 50, y: 30, theta: 0 }, 3, n3Schedule, SEEDS[i]));
   }
 
   // calibration-bias-v1: 54.5,30,0°; offsetX=32 (vs correct 20); no noise
   const calibrationFailure = {
     id: 'calibration-bias-v1',
+    group: 'challenge',
+    name: 'Thử thách: sai hiệu chuẩn',
+    randomAlgorithm: 'xorshift32',
     world: { x: 54.5, y: 30, theta: 0 },
     noiseAmplitudePx: 0,
-    occlusionSchedule: null,
-    occlusionFn: null,
+    occlusionSchedule: {type:'none'},
     calibration: { scale: 6, offsetX: 32, offsetY: 20 },
     seed: 101,
     durationMs: DURATION_MS,
@@ -93,7 +101,7 @@ window.DC.scenarios = (function () {
     const counts = { C1: 0, C2: 0, C3: 0, C4: 0, N1: 0, N2: 0, N3: 0 };
     const seedSet = {};
     suite.forEach(function (t) {
-      const g = t.id.split('_')[0];
+      const g = t.group;
       if (counts.hasOwnProperty(g)) counts[g]++;
       seedSet[t.seed] = true;
     });
@@ -132,7 +140,7 @@ window.DC.scenarios = (function () {
     // calibration failure preset
     assert('S25: calibrationFailure has offsetX=32', calibrationFailure.calibration.offsetX === 32);
     assert('S26: calibrationFailure world is (54.5, 30, 0)', calibrationFailure.world.x === 54.5);
-    assert('S27: calibrationFailure has no noise/occlusion', calibrationFailure.noiseAmplitudePx === 0 && !calibrationFailure.occlusionFn);
+    assert('S27: calibrationFailure has no noise/occlusion', calibrationFailure.noiseAmplitudePx === 0 && calibrationFailure.occlusionSchedule.type === 'none');
 
     // each trial has required fields
     let missingFields = 0;
@@ -160,10 +168,10 @@ window.DC.scenarios = (function () {
     }
 
     // occlusion schedule preserved on trial
-    assert('S31: C4 trial has occlusionFn that triggers at t=250',
-      suite[3].occlusionFn && suite[3].occlusionFn(250) === true);
-    assert('S32: N3 trial has occlusionFn that triggers at t=1000',
-      suite[14].occlusionFn && suite[14].occlusionFn(1000) === true);
+    assert('S31: C4 trial has serializable periodic schedule',
+      suite[3].occlusionSchedule.type === 'periodic' && suite[3].occlusionSchedule.startMs === 250);
+    assert('S32: N3 trial has serializable interval schedule',
+      suite[14].occlusionSchedule.type === 'intervals' && suite[14].occlusionSchedule.intervals[0][0] === 1000);
 
     let pass = 0;
     let fail = 0;
